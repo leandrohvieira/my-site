@@ -6,6 +6,7 @@ from django.views.generic import ListView
 from .models import Post, Comment
 from .forms import EmailPostForm, CommentForm
 from taggit.models import Tag
+from django.db.models import Count
 
 
 def post_list(request, tag_slug=None):
