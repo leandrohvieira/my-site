@@ -13,7 +13,8 @@
       Share this post
     </a>
   </p>
-  <h2>Similar posts</h2>
+
+    <h2>Similar posts</h2>
   {% for post in similar_posts %}
     <p>
       <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
@@ -40,7 +41,8 @@
   {% if new_comment %}
     <h2>Your comment has been added.</h2>
   {% else %}
-    <h2>Add a new comment</h2>
+
+      <h2>Add a new comment</h2>
     <form method="post">
       {{ comment_form.as_p }}
       {% csrf_token %}
