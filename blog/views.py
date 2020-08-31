@@ -8,7 +8,8 @@ from .forms import EmailPostForm, CommentForm, SearchForm
 from taggit.models import Tag
 from django.db.models import Count
 #from django.contrib.postgres.search import SearchVector
-
+from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.contrib.postgres.search import TrigramSimilarity
 
 
 def post_list(request, tag_slug=None):
@@ -38,10 +39,9 @@ def post_list(request, tag_slug=None):
 
 def post_detail(request, year, month, day, post):
     post = get_object_or_404(Post, slug=post,
-                                   status='published',
-                                   publish__year=year,
-                                   publish__month=month,
-                                   publish__day=day)
+                             publish__year=year,
+                             publish__month=month,
+                             publish__day=day)
 
     # List of active comments for this post
     comments = post.comments.filter(active=True)
@@ -117,7 +117,12 @@ def post_search(request):
         form = SearchForm(request.GET)
         if form.is_valid():
             query = form.cleaned_data['query']
-            results = Post.published.annotate('title', 'body',).filter(search=query)
+            search_vector = SearchVector('title', weight='A') +\
+                            SearchVector('body', weight='B')
+            search_query = SearchQuery(query)
+            results = Post.published.annotate(
+                similarity=TrigramSimilarity('title', query),
+            ).filter(similarity__gt=0.1).order_by('-similarity')
     return render(request, 'blog/post/search.html',
                   {'form': form,
                    'query': query,
