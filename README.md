@@ -1,4 +1,4 @@
-# :computer: my-site
+# :computer: my site
 
 <p align="center">
   <a href="https://opensource.org/licenses/MIT">
